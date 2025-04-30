@@ -1,0 +1,26 @@
+# Ignore build output
+bin/
+obj/
+out/
+
+# Visual Studio folders and files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ASP.NET files
+appsettings.*.json
+*.dbmdl
+*.log
+
+# Temporary files
+*.tmp
+*.log
+*.cache
+
+# Others
+TestResults/
+*.ncrunch*
+*.vscode/
