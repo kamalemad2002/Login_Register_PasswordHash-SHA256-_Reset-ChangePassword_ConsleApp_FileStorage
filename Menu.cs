@@ -12,11 +12,10 @@ namespace SecurityProject
     {
         public Menu()
         {
-            string fileName = @"C:\Users\hp\Documents\VisualStudio\SecurityProject\users.txt";
             bool running = true;
             while (running)
             {
-                Console.WriteLine("Console Login in C#\r");
+                Console.WriteLine("Login/Register\r");
                 Console.WriteLine("------------------------\n");
                 Console.WriteLine("Choose an option from the following list:");
                 Console.WriteLine("\tl - Login");
@@ -68,10 +67,10 @@ namespace SecurityProject
                 switch (input)
                 {
                     case "1":
-                        EncryptionService.EncryptText(userEmail);
+                        EncryptionService.RSAEncrypt(userEmail, false);
                         break;
                     case "2":
-                        EncryptionService.DecryptText(userEmail);
+                        EncryptionService.RSADecrypt(userEmail,false);
                         break;
                     case "3":
                          PassServices.ChangePassword(userEmail);

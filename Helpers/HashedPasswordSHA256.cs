@@ -9,11 +9,13 @@ namespace SecurityProject.Helpers
 {
     public class HashedPasswordSHA256
     {
+        static UnicodeEncoding ByteConverter = new UnicodeEncoding();
+
         public static string HashPassword(string password)
         {
             using (SHA256 sha256 = SHA256.Create())
             {
-                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                byte[] bytes = sha256.ComputeHash(ByteConverter.GetBytes(password));
                 StringBuilder builder = new StringBuilder();
                 foreach (byte b in bytes)
                 {

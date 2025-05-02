@@ -23,7 +23,7 @@ namespace SecurityProject.Services
         public static void Register()
         {
             RegisterModel model = new RegisterModel();
-            Console.Write("Enter Email: ");
+            Console.Write("Enter Email:");
             model.Email = Console.ReadLine().ToLower();
             if (string.IsNullOrWhiteSpace(model.Email))
             {
@@ -32,7 +32,7 @@ namespace SecurityProject.Services
             }
             var users = FileManager.LoadUsers();
             if(users.Any(user => user.Email.Equals(model.Email, StringComparison.OrdinalIgnoreCase)))
-{
+            {
                 Console.WriteLine("User Email is already registered,plz LogIn");
                 return;
             }
@@ -70,7 +70,7 @@ namespace SecurityProject.Services
 
             if (user != null && user.Password == Helpers.HashedPasswordSHA256.HashPassword(model.Password))
             {
-                Console.WriteLine("Login successful.");
+                Console.WriteLine("Login Successfully!");
                 return model.Email;
             }
 

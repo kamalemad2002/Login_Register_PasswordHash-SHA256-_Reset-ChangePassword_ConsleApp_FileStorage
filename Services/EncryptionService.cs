@@ -1,54 +1,79 @@
 ﻿using SecurityProject.Storage;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SecurityProject.Services
 {
     public class EncryptionService
     {
-        public static void EncryptText(string email)
+        static UnicodeEncoding ByteConverter = new UnicodeEncoding();
+
+        public static void RSAEncrypt(string email, bool doOAEPPadding)
         {
-            Console.Write("Enter text to encrypt: ");
-            string plainText = Console.ReadLine();
-
-            using (RSA rsa = RSA.Create())
+            try
             {
-                string publicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
-                string privateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
+                // Ask user for input text
+                Console.Write("Enter text to encrypt: ");
+                string inputText = Console.ReadLine();
+                byte[] dataToEncrypt = ByteConverter.GetBytes(inputText);
 
-                byte[] inputBytes = Encoding.UTF8.GetBytes(plainText);
-                byte[] encryptedBytes = rsa.Encrypt(inputBytes, RSAEncryptionPadding.OaepSHA256);
-                string encryptedText = Convert.ToBase64String(encryptedBytes);
+                using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+                {
+                    // Export public and private key
+                    RSAParameters publicKey = rsa.ExportParameters(false);
+                    RSAParameters privateKey = rsa.ExportParameters(true);
 
-                FileManager.SaveEncryptedText(email, encryptedText, privateKey);
-                Console.WriteLine("Text encrypted and saved using RSA.");
+                    byte[] encryptedData = rsa.Encrypt(dataToEncrypt, doOAEPPadding);
+                    string cipherBase64 = Convert.ToBase64String(encryptedData);
+                    string privateKeyBase64 = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
+
+                    // Save encrypted data and private key to file
+                    FileManager.SaveEncryptedText(email, cipherBase64, privateKeyBase64);
+
+                    Console.WriteLine($"Plain Text: {inputText}");
+                    Console.WriteLine($"Cipher Text (Base64): {cipherBase64}");
+                    Console.WriteLine("Encrypted data saved.");
+                }
             }
-        }
-        public static void DecryptText(string email)
-        {
-            var (encryptedText, privateKeyBase64) = FileManager.LoadEncryptedText(email);
-            if (encryptedText == null)
+            catch (CryptographicException e)
             {
-                Console.WriteLine("No encrypted text found.");
-                return;
-            }
-
-            byte[] encryptedBytes = Convert.FromBase64String(encryptedText);
-            byte[] privateKey = Convert.FromBase64String(privateKeyBase64);
-
-            using (RSA rsa = RSA.Create())
-            {
-                rsa.ImportRSAPrivateKey(privateKey, out _);
-                byte[] decryptedBytes = rsa.Decrypt(encryptedBytes, RSAEncryptionPadding.OaepSHA256);
-                string plainText = Encoding.UTF8.GetString(decryptedBytes);
-                Console.WriteLine("Decrypted Text: " + plainText);
+                Console.WriteLine("Encryption error: " + e.Message);
             }
         }
 
+        public static List<string> RSADecrypt(string email, bool doOAEPPadding)
+        {
+            var plainTexts = new List<string>();
+            var entries = FileManager.LoadAllEncryptedTexts(email);
+
+            foreach (var (cipherBase64, privateKeyBase64) in entries)
+            {
+                try
+                {
+                    byte[] cipherBytes = Convert.FromBase64String(cipherBase64);
+                    byte[] privateKeyBytes = Convert.FromBase64String(privateKeyBase64);
+
+                    using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+                    {
+                        rsa.ImportRSAPrivateKey(privateKeyBytes, out _);
+                        byte[] decryptedBytes = rsa.Decrypt(cipherBytes, doOAEPPadding);
+                        string plainText = ByteConverter.GetString(decryptedBytes);
+
+                        //plainTexts.Add(plainText);
+                        Console.WriteLine($"Decrypted Text: {plainText}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //Console.WriteLine($"Decryption failed for one entry: {ex.Message}");
+                    // Optionally log the error if needed, but don't add failed ones to the result
+                }
+            }
+
+            return plainTexts;  // Return only successfully decrypted texts
+        }
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SecurityProject.Storage;
+using System.Text;
 
 namespace SecurityProject
 {
@@ -9,6 +10,7 @@ namespace SecurityProject
             FileManager.InitializeFiles();
             Menu menu = new Menu();
             Console.WriteLine(menu);
+            //DisplayLoginRegister();
         }
     }
 }

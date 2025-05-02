@@ -54,26 +54,37 @@ namespace SecurityProject.Storage
             }
             File.WriteAllLines(registerFile, users.ConvertAll(u => $"{u.Email},{u.Password}"));
         }
-        public static void SaveEncryptedText(string email, string encryptedText, string privateKey)
+        public static void SaveEncryptedText(string email, string plainText, string cipherText)
         {
-            File.AppendAllText(encryptedFile, $"{email},{encryptedText},{privateKey}\n");
+            try
+            {
+                File.AppendAllText(encryptedFile, $"{email},{plainText},{cipherText}\n");
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"File write error: {ex.Message}");
+            }
         }
 
-        public static (string, string) LoadEncryptedText(string email)
+        public static List<(string plainText, string cipherText)> LoadAllEncryptedTexts(string email)
         {
-            if (!File.Exists(encryptedFile)) 
-                return (null, null);
+            var results = new List<(string, string)>();
+
+            if (!File.Exists(encryptedFile))
+                return results;
 
             foreach (var line in File.ReadAllLines(encryptedFile))
             {
                 var parts = line.Split(',');
                 if (parts.Length >= 3 && parts[0] == email)
                 {
-                    return (parts[1], parts[2]);
+                    results.Add((parts[1], parts[2]));
                 }
             }
-            return (null, null);
+
+            return results;
         }
+
         public static void InitializeFiles()
         {
             if (!File.Exists(registerFile))
