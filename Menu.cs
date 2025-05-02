@@ -67,10 +67,10 @@ namespace SecurityProject
                 switch (input)
                 {
                     case "1":
-                        EncryptionService.RSAEncrypt(userEmail, false);
+                        EncryptionServiceRSA.RSAEncrypt(userEmail, false);
                         break;
                     case "2":
-                        EncryptionService.RSADecrypt(userEmail,false);
+                        EncryptionServiceRSA.RSADecrypt(userEmail,false);
                         break;
                     case "3":
                          PassServices.ChangePassword(userEmail);
@@ -80,7 +80,7 @@ namespace SecurityProject
                         break;
                     case "00":
                         Console.WriteLine("Logged out.");
-                        return; // Return to the main menu
+                        return; 
                     default:
                         Console.WriteLine("Invalid option.");
                         break;

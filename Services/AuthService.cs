@@ -2,6 +2,7 @@
 using SecurityProject.Storage;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
@@ -19,33 +20,48 @@ namespace SecurityProject.Services
             _registerModel = registerModel;
             _loginModel = loginModel;
         }
-       
+
         public static void Register()
         {
             RegisterModel model = new RegisterModel();
             Console.Write("Enter Email:");
             model.Email = Console.ReadLine().ToLower();
-            if (string.IsNullOrWhiteSpace(model.Email))
-            {
-                Console.WriteLine("Email cannot be empty.");
-                return;
-            }
+            //if (string.IsNullOrWhiteSpace(model.Email))
+            //{
+            //    Console.WriteLine("Email cannot be empty.");
+            //    return;
+            //}
+
             var users = FileManager.LoadUsers();
-            if(users.Any(user => user.Email.Equals(model.Email, StringComparison.OrdinalIgnoreCase)))
+            if (users.Any(user => user.Email.Equals(model.Email, StringComparison.OrdinalIgnoreCase)))
             {
-                Console.WriteLine("User Email is already registered,plz LogIn");
+                Console.WriteLine("User Email is already registered,Plz LogIn!!");
                 return;
             }
 
             Console.Write("Enter Password: ");
             model.Password = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(model.Password))
+            //if (string.IsNullOrWhiteSpace(model.Password))
+            //{
+            //    Console.WriteLine("Password cannot be empty.");
+            //    return ;
+            //}
+            var context = new ValidationContext(model);
+            var results = new List<ValidationResult>();
+
+            bool isValid = Validator.TryValidateObject(model, context, results, true);
+
+            if (!isValid)
             {
-                Console.WriteLine("Password cannot be empty.");
-                return ;
+                foreach (var error in results)
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
+                return;
             }
+
             var hashed = Helpers.HashedPasswordSHA256.HashPassword(model.Password);
-             FileManager.SaveUser(new RegisterModel{ Email = model.Email, Password= hashed });
+            FileManager.SaveUser(new RegisterModel { Email = model.Email, Password = hashed });
             Console.WriteLine("Register Successfully!");
         }
         public static string Login()
