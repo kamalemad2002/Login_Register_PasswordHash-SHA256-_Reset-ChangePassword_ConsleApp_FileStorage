@@ -32,8 +32,8 @@ This is a simple C# console app that includes:
 
 ## 📁 File Storage
 
-- `users.txt` → stores: `name,email,hashedPassword`
-- `encrypted_data.txt` → stores: `email,encryptedText,privateKey`
+- `users.txt` → stores: `email,hashedPassword`
+- `encrypted_data.txt` → stores: `email,plainText,CipherText`
 
 ---
 
@@ -41,5 +41,5 @@ This is a simple C# console app that includes:
 
 - C# (.NET Console App)
 - SHA-256 (for password hashing)
-- RSACryptoServiceProvider (for encryption)
+- RSACryptoServiceProvider (for encryption & decryption)
 - System.IO (for file handling)
