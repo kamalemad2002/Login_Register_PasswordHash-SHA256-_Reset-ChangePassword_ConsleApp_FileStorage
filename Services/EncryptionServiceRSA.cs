@@ -39,7 +39,7 @@ namespace SecurityProject.Services
                 using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
                 {
                     rsa.ImportParameters(pubkey); 
-                    rsa.ImportParameters(privkey); 
+                    //rsa.ImportParameters(privkey); 
                     byte[] encryptedData = rsa.Encrypt(dataToEncrypt, doPadding);
                     string cipherBase64 = Convert.ToBase64String(encryptedData);
                     //string privateKeyBase64 = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
